@@ -32,5 +32,3 @@ if st.button("Generate"):
         response = requests.post(API_URL, headers=headers, json=payload)
         st.write("**Response:**")
         st.success(response.json()["response"])
-    except Exception as e:
-        st.error(f"Error: {e}")
