@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 
-API_URL = "http://localhost:7860/generate/"  # Update when deployed
+API_URL = "https://main-file-2.onrender.com/generate/"  # Update when deployed
 
 st.title("🔐 Custom LLM API Key Chatbot")
 
