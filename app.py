@@ -20,15 +20,30 @@ if st.button("Get API Key"):
     else:
         st.info(f"Your API Key: {keys[email]}")
 
-# Prompt interface
-st.subheader("💬 Talk to the LLM")
-api_key = st.text_input("Enter your API key")
-prompt = st.text_area("Enter your prompt")
+api_key = st.text_input("🔑 Enter your API Key", type="password")
+prompt = st.text_area("💬 Enter your prompt")
 
-if st.button("Generate"):
-    headers = {"Authorization": f"Bearer {api_key}"}
-    payload = {"prompt": prompt}
-    try:
-        response = requests.post(API_URL, headers=headers, json=payload)
-        st.write("**Response:**")
-        st.success(response.json()["response"])
+if st.button("🚀 Generate"):
+    if not api_key or not prompt.strip():
+        st.warning("Please enter both an API key and a prompt.")
+    else:
+        headers = {"Authorization": f"Bearer {api_key}"}
+        payload = {"prompt": prompt}
+        try:
+            response = requests.post(API_URL, headers=headers, json=payload)
+            if response.status_code == 200:
+                result = response.json()["response"]
+                st.success(result)
+            else:
+                st.error(f"Error {response.status_code}: {response.json().get('detail', 'Unknown error')}")
+        except Exception as e:
+            st.error(f"Connection failed: {e}")
+
+
+
+
+
+
+
+
+
