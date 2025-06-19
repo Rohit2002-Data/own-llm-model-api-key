@@ -1,10 +1,15 @@
 import streamlit as st
 import requests
 import json
+import os
+from dotenv import load_dotenv
 
-PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"  # Update when deployed
+# Load .env
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your-gemini-key-here")
+
+PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
-GEMINI_API_KEY = st.secrets.get("GEMINI_API_KEY", "your-gemini-key-here")  # Use secrets.toml or .env
 
 st.title("🔐 Custom LLM API Key Chatbot with Fallback")
 
@@ -59,6 +64,7 @@ if st.button("🚀 Generate"):
                 st.success(reply)
             else:
                 st.error(f"Gemini API failed: {gemini_response.text}")
+
 
 
 
