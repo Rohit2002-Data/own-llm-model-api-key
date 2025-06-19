@@ -4,12 +4,15 @@ import json
 import os
 from dotenv import load_dotenv
 
-# Load the .env file
+# Load environment variables from .env
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+# URLs
 PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+
+# Streamlit UI
 st.title("🔐 Custom LLM API Key Chatbot with Gemini Fallback")
 
 # --- API Key Assignment ---
@@ -39,24 +42,27 @@ if st.button("🚀 Generate"):
     if not api_key or not prompt.strip():
         st.warning("⚠️ Please enter both an API key and a prompt.")
     else:
+        result = ""
         headers = {"Authorization": f"Bearer {api_key}"}
         payload = {"prompt": prompt}
-        result = ""
 
+        # Try own LLM first
         try:
             response = requests.post(PRIMARY_API_URL, headers=headers, json=payload, timeout=10)
             if response.status_code == 200:
                 result = response.json().get("response", "")
-
         except Exception:
-            pass  # Skip to fallback
+            pass  # Continue to Gemini fallback
 
+        # If no result, fallback to Gemini
         if not result:
-            # --- Gemini fallback ---
             gemini_payload = {
                 "contents": [{"parts": [{"text": prompt}]}]
             }
-            gemini_headers = {"Content-Type": "application/json"}
+            gemini_headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {GEMINI_API_KEY}"
+            }
 
             gemini_response = requests.post(
                 GEMINI_API_URL, headers=gemini_headers, json=gemini_payload
@@ -66,7 +72,6 @@ if st.button("🚀 Generate"):
                 result = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
             else:
                 st.error(f"❌ Gemini API failed: {gemini_response.text}")
-                result = ""
 
         if result:
             st.success(result)
