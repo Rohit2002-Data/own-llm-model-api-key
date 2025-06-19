@@ -59,13 +59,13 @@ if st.button("🚀 Generate"):
 
         # Fallback to Gemini SDK if needed
         if not result:
-            #st.info("🧠 Falling back to Gemini (via SDK)...")
+            
             try:
                 model = genai.GenerativeModel("gemini-2.0-flash")
                 gemini_response = model.generate_content(prompt)
                 result = gemini_response.text
             except Exception as e:
-                st.error(f"❌ Gemini SDK fallback failed: {e}")
+                
 
         # Final Result
         if result:
