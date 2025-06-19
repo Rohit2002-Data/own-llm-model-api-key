@@ -16,7 +16,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 PRIMARY_API_URL = " https://main-file-28.onrender.com/generate/"
 
 # --- Streamlit UI ---
-st.title("🤖 Chatbot with Custom LLM + Gemini Fallback")
+st.title("🤖 Chatbot with Custom LLM model")
 
 # --- Email and API Key Generation ---
 email = st.text_input("📧 Enter your email to get an API key")
@@ -59,7 +59,7 @@ if st.button("🚀 Generate"):
 
         # Fallback to Gemini SDK if needed
         if not result:
-            st.info("🧠 Falling back to Gemini (via SDK)...")
+            #st.info("🧠 Falling back to Gemini (via SDK)...")
             try:
                 model = genai.GenerativeModel("gemini-2.0-flash")
                 gemini_response = model.generate_content(prompt)
