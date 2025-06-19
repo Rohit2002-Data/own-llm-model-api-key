@@ -60,8 +60,7 @@ if st.button("🚀 Generate"):
                 "contents": [{"parts": [{"text": prompt}]}]
             }
             gemini_headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GEMINI_API_KEY}"
+                "Content-Type": "application/json"
             }
 
             gemini_response = requests.post(
