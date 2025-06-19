@@ -9,7 +9,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your-gemini-key-here")
 
 PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=GEMINI_API_KEY"
 
 st.title("🔐 Custom LLM API Key Chatbot with Fallback")
 
