@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 # Load .env variables (GEMINI_API_KEY)
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your-gemini-key-here")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
