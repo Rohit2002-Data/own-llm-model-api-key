@@ -69,8 +69,6 @@ if st.button("🚀 Generate"):
 
             if gemini_response.status_code == 200:
                 result = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
-            else:
-                st.error(f"❌ Gemini API failed: {gemini_response.text}")
 
         if result:
             st.success(result)
