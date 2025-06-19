@@ -13,7 +13,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 # --- Custom LLM API URL ---
-PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"
+PRIMARY_API_URL = " https://main-file-28.onrender.com/generate/"
 
 # --- Streamlit UI ---
 st.title("🤖 Chatbot with Custom LLM + Gemini Fallback")
