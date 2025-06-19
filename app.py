@@ -65,6 +65,7 @@ if st.button("🚀 Generate"):
                 gemini_response = model.generate_content(prompt)
                 result = gemini_response.text
             except Exception as e:
+                raise({e})
                 
 
         # Final Result
