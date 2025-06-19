@@ -3,21 +3,22 @@ import requests
 import json
 import os
 from dotenv import load_dotenv
+import google.generativeai as genai
 
-# Load environment variables from .env
+# --- Load environment variables ---
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Gemini (free) URL using gemini-pro
-GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+# --- Configure Gemini SDK ---
+genai.configure(api_key=GEMINI_API_KEY)
 
-# Your own LLM API
+# --- Custom LLM API URL ---
 PRIMARY_API_URL = "https://main-file-20.onrender.com/generate/"
 
 # --- Streamlit UI ---
 st.title("🤖 Chatbot with Custom LLM + Gemini Fallback")
 
-# --- Get Email and Generate API Key ---
+# --- Email and API Key Generation ---
 email = st.text_input("📧 Enter your email to get an API key")
 if st.button("Get API Key"):
     try:
@@ -35,7 +36,7 @@ if st.button("Get API Key"):
     else:
         st.info(f"🔐 Your existing API Key: {keys[email]}")
 
-# --- Prompt Inputs ---
+# --- User Input ---
 api_key = st.text_input("🔑 Enter your API Key", type="password")
 prompt = st.text_area("💬 Enter your prompt")
 
@@ -48,7 +49,7 @@ if st.button("🚀 Generate"):
         headers = {"Authorization": f"Bearer {api_key}"}
         payload = {"prompt": prompt}
 
-        # Try your own LLM
+        # Try custom LLM API
         try:
             response = requests.post(PRIMARY_API_URL, headers=headers, json=payload, timeout=10)
             if response.status_code == 200:
@@ -56,29 +57,17 @@ if st.button("🚀 Generate"):
         except Exception as e:
             st.warning(f"⚠️ Custom LLM error: {e}")
 
-        # Fallback to Gemini if own LLM fails or returns empty
+        # Fallback to Gemini SDK if needed
         if not result:
-            st.info("🧠 Falling back to Gemini (free tier)...")
-            gemini_payload = {
-                "contents": [{"parts": [{"text": prompt}]}]
-            }
-            gemini_headers = {
-                "Content-Type": "application/json"
-            }
-
+            st.info("🧠 Falling back to Gemini (via SDK)...")
             try:
-                gemini_response = requests.post(
-                    GEMINI_API_URL, headers=gemini_headers, json=gemini_payload, timeout=10
-                )
-                if gemini_response.status_code == 200:
-                    result = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
-                else:
-                    st.error(f"❌ Gemini API Error: {gemini_response.status_code}")
-                    st.json(gemini_response.json())
+                model = genai.GenerativeModel("gemini-pro")
+                gemini_response = model.generate_content(prompt)
+                result = gemini_response.text
             except Exception as e:
-                st.error(f"❌ Gemini fallback failed: {e}")
+                st.error(f"❌ Gemini SDK fallback failed: {e}")
 
-        # Show Result
+        # Final Result
         if result:
             st.success(result)
         else:
