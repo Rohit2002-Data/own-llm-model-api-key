@@ -55,7 +55,7 @@ if st.button("🚀 Generate"):
             if response.status_code == 200:
                 result = response.json().get("response", "").strip()
         except Exception as e:
-            raise({e})
+            raise(e)
 
         # Fallback to Gemini SDK if needed
         if not result:
@@ -65,7 +65,7 @@ if st.button("🚀 Generate"):
                 gemini_response = model.generate_content(prompt)
                 result = gemini_response.text
             except Exception as e:
-                raise({e})
+                raise(e)
                 
 
         # Final Result
