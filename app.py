@@ -8,15 +8,17 @@ import google.generativeai as genai
 # --- Load environment variables ---
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+HF_API_TOKEN = os.getenv("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")  # Add this to your .env file
 
 # --- Configure Gemini SDK ---
 genai.configure(api_key=GEMINI_API_KEY)
 
-# --- Custom LLM API URL ---
-PRIMARY_API_URL = " https://main-file-28.onrender.com/generate/"
+# --- Hugging Face API ---
+HF_MODEL = "google/gemma-2b"
+HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 
 # --- Streamlit UI ---
-st.title("🤖 Chatbot with Custom LLM model")
+st.title("🤖 Chatbot with Gemma-2B & Gemini fallback")
 
 # --- Email and API Key Generation ---
 email = st.text_input("📧 Enter your email to get an API key")
@@ -46,30 +48,40 @@ if st.button("🚀 Generate"):
         st.warning("⚠️ Please enter both an API key and a prompt.")
     else:
         result = ""
-        headers = {"Authorization": f"Bearer {api_key}"}
-        payload = {"prompt": prompt}
+        headers = {
+            "Authorization": f"Bearer {HF_API_TOKEN}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "inputs": prompt,
+            "parameters": {"max_new_tokens": 200}
+        }
 
-        # Try custom LLM API
+        # Try Hugging Face Gemma-2B
         try:
-            response = requests.post(PRIMARY_API_URL, headers=headers, json=payload, timeout=10)
+            response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=20)
             if response.status_code == 200:
-                result = response.json().get("response", "").strip()
+                hf_result = response.json()
+                if isinstance(hf_result, list) and "generated_text" in hf_result[0]:
+                    result = hf_result[0]["generated_text"].strip()
+                elif isinstance(hf_result, dict) and "generated_text" in hf_result:
+                    result = hf_result["generated_text"].strip()
+            else:
+                st.error(f"HF API error {response.status_code}: {response.text}")
         except Exception as e:
-            raise(e)
+            st.error(f"Hugging Face API error: {str(e)}")
 
         # Fallback to Gemini SDK if needed
         if not result:
-            
             try:
                 model = genai.GenerativeModel("gemini-2.0-flash")
                 gemini_response = model.generate_content(prompt)
                 result = gemini_response.text
             except Exception as e:
-                raise(e)
-                
+                st.error(f"Gemini error: {str(e)}")
 
         # Final Result
         if result:
             st.success(result)
         else:
-            st.error("❌ No response from either LLM or Gemini.")
+            st.error("❌ No response from either Gemma-2B or Gemini.")
