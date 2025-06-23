@@ -8,7 +8,7 @@ import google.generativeai as genai
 # --- Load environment variables ---
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-HF_API_TOKEN = os.getenv("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")  # Add this to your .env file
+HF_API_TOKEN = os.getenv("HF_API_TOKEN") # Add this to your .env file
 
 # --- Configure Gemini SDK ---
 genai.configure(api_key=GEMINI_API_KEY)
